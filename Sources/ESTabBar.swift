@@ -195,7 +195,13 @@ internal extension ESTabBar /* Layout */ {
             } .sorted { (subview1, subview2) -> Bool in
                 return subview1.frame.origin.x < subview2.frame.origin.x
         }
-        
+
+        // Guard against accessing tabBarButtons when they haven't been created yet
+        guard tabBarButtons.count >= tabBarItems.count else {
+            ESTabBarController.printError("tabBarButtons count (\(tabBarButtons.count)) is less than tabBarItems count (\(tabBarItems.count))")
+            return
+        }
+
         if isCustomizing {
             for (idx, _) in tabBarItems.enumerated() {
                 tabBarButtons[idx].isHidden = false
@@ -233,7 +239,7 @@ internal extension ESTabBar /* Layout */ {
         if layoutBaseSystem {
             // System itemPositioning
             for (idx, container) in containers.enumerated(){
-                if !tabBarButtons[idx].frame.isEmpty {
+                if idx < tabBarButtons.count && !tabBarButtons[idx].frame.isEmpty {
                     container.frame = tabBarButtons[idx].frame
                 }
             }
